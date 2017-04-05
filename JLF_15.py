@@ -1,11 +1,10 @@
-#atlas_dataset is extended
+#prototype is made stable
+#copy of JLF_15
+#corrected based on 15_2
+#MRAtoLGE LGEtoMRA is twisted
+#added LGEtoMRA
 
-#take care of error below
-# second   atlas_dataset.remove(target_id)
-
-#LGEtoMRA ONLY AFFINE for all atlases, shoul dtake around 3 hours
-
-# intl_rigid+AFFINE+DEF+JLF + MRAtoLGE_aff_def
+# LGEtoMRA_aff + intl_rigid + AFFINE + DEF+JLF + MRAtoLGE_aff_def
 
 # +LGE TO MRA CORRECTION
 # +folders are reoriented
@@ -37,8 +36,10 @@ reg_f3d = os.path.join(nifty_reg_dir, 'reg_f3d')
 jointfusion = os.path.join(jointfusion_dir, 'jointfusion')
 
 #FLags
-enableCmdFlag=True#contniue
+enableCmdFlag = False
 
+LGEtoMRA_registerFlag=True
+LGEtoMRA_registerResampleFlag=True
 
 affRegFlag=True
 affResampleLabelFLag=True
@@ -46,27 +47,30 @@ defRegFlag=True
 defResampleLabelFlag=True
 
 fuseAllLabelFlag=True
-LGE_MRA_registerFlag=True
-LGE_MRA_registerResampleFlag=True
+MRAtoLGE_registerFlag=True
+MRAtoLGE_registerResampleFlag=True
 
 calcDSCFlag=0
 saveDSCResultsFlag=0
 
-
+aff_reg_type_LGEtoMRA = 'aff'
+def_reg_LGEtoMRA = False#<--
 aff_reg_type = 'aff'
 def_reg = True #def_reg = True
-aff_reg_type_LGEtoMRA = 'aff'
-def_reg_LGEtoMRA = True#<--
+aff_reg_type_MRAtoLGE = 'aff'
+def_reg_MRAtoLGE = True#<--
+
+
 
 if def_reg == True:
     global_reg_type = aff_reg_type + '_def'
 else:
     global_reg_type = aff_reg_type
 
-if def_reg_LGEtoMRA == True:
-    global_reg_type_LGEtoMRA = aff_reg_type_LGEtoMRA + '_def'
+if def_reg_MRAtoLGE == True:
+    global_reg_type_MRAtoLGE = aff_reg_type_MRAtoLGE + '_def'
 else:
-    global_reg_type_LGEtoMRA = aff_reg_type_LGEtoMRA
+    global_reg_type_MRAtoLGE = aff_reg_type_MRAtoLGE
 
 #PARAMETERS
 #Registration Parameters
@@ -108,7 +112,7 @@ for target_id in target_dataset: #target dataset for cross_correlation, if no cr
     #        atlas_dataset = ['P00', 'P01', 'P02', 'P03', 'P04', 'P05' , 'P06', 'P07', 'P08', 'P09', 'P10' ]
     #start_aff = timer()
     #target_img = os.path.join(data_root, target_id, 'MRA0715.nii')#target is LGE, floating is MRA
-    atlas_dataset = ['0485', '0495', '0515', '0529', '0565', '0578',  '0715', '1115', '1168']    
+    atlas_dataset = ['0485', '0495', '0515', '0529', '0565', '0578',  '0715', '1115', '1168']
     target_img = os.path.join(data_root, target_id, 'MRA' + target_id + '.nii')#target is LGE, floating is MRA
     atlas_dataset.remove(target_id)
 
@@ -129,7 +133,8 @@ for target_id in target_dataset: #target dataset for cross_correlation, if no cr
                 cmd_aff = reg_aladin + ' -ref ' + target_img + ' -flo ' + flo_img + ' -res ' + aff_img + ' -aff ' + aff_mat + ' -iso'
 
             print(cmd_aff)
-            os.system(cmd_aff)
+            if enableCmdFlag == True
+                os.system(cmd_aff)
 
     if affResampleLabelFLag == True:
         for a in atlas_dataset:
@@ -150,16 +155,19 @@ for target_id in target_dataset: #target dataset for cross_correlation, if no cr
             # resampling labels using affine registration results
             cmd_aff_lbl1 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl1 + ' -res ' + aff_lbl1 + ' -trans ' + aff_mat + ' -inter ' + NN
             print(cmd_aff_lbl1)
-            os.system(cmd_aff_lbl1)
+            if enableCmdFlag == True
+                os.system(cmd_aff_lbl1)
 
             cmd_aff_lbl2 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl2 + ' -res ' + aff_lbl2 + ' -trans ' + aff_mat + ' -inter ' + NN
-            os.system(cmd_aff_lbl2)
+            if enableCmdFlag == True
+                os.system(cmd_aff_lbl2)
 
             #cmd_aff_lbl3 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl3 + ' -res ' + aff_lbl3 + ' -trans ' + aff_mat + ' -inter ' + NN
             #os.system(cmd_aff_lbl3)
 
             cmd_aff_lbl4 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl4 + ' -res ' + aff_lbl4 + ' -trans ' + aff_mat + ' -inter ' + NN
-            os.system(cmd_aff_lbl4)
+            if enableCmdFlag == True
+                os.system(cmd_aff_lbl4)
 
     if defRegFlag == True:
         for a in atlas_dataset:
@@ -173,7 +181,8 @@ for target_id in target_dataset: #target dataset for cross_correlation, if no cr
             cmd_def = reg_f3d + ' -ref ' + target_img + ' -flo ' + aff_img + ' -res ' + def_img + ' -cpp ' + def_output_cpp + ' -be ' + be + ' -le ' + le
 
             print(cmd_def)
-            os.system(cmd_def)
+            if enableCmdFlag == True
+                os.system(cmd_def)
 
     if defResampleLabelFlag == True:
         for a in atlas_dataset:
@@ -199,16 +208,19 @@ for target_id in target_dataset: #target dataset for cross_correlation, if no cr
             #resampling labels using deformable registration results
             cmd_def_lbl1 = reg_resample + ' -ref ' + target_img + ' -flo ' + aff_lbl1 + ' -res ' + def_lbl1 + ' -trans ' + def_output_cpp + ' -inter ' + NN
             print(cmd_def_lbl1)
-            os.system(cmd_def_lbl1)
+            if enableCmdFlag == True
+                os.system(cmd_def_lbl1)
 
             cmd_def_lbl2 = reg_resample + ' -ref ' + target_img + ' -flo ' + aff_lbl2 + ' -res ' + def_lbl2 + ' -trans ' + def_output_cpp + ' -inter ' + NN
-            os.system(cmd_def_lbl2)
+            if enableCmdFlag == True
+                os.system(cmd_def_lbl2)
 
             #cmd_def_lbl3 = reg_resample + ' -ref ' + target_img + ' -flo ' + aff_lbl3 + ' -res ' + def_lbl3 + ' -trans ' + def_output_cpp + ' -inter ' + NN
             #os.system(cmd_def_lbl3)
 
             cmd_def_lbl4 = reg_resample + ' -ref ' + target_img + ' -flo ' + aff_lbl4 + ' -res ' + def_lbl4 + ' -trans ' + def_output_cpp + ' -inter ' + NN
-            os.system(cmd_def_lbl4)
+            if enableCmdFlag == True
+                os.system(cmd_def_lbl4)
 
 
             #cmd_def_lbl2 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl2 + ' -res ' + def_lbl2 + ' -trans ' + def_output_cpp + ' -inter ' + NN
@@ -250,77 +262,82 @@ for target_id in target_dataset: #target dataset for cross_correlation, if no cr
         #     '-m Joint[0.1,2] -rp 4x4x4 -rs 3x3x3x ' + atlas_seg_result
 
         print(cmdfuse)
-        os.system(cmdfuse)
+        if enableCmdFlag == True
+            os.system(cmdfuse)
 
-    if LGE_MRA_registerFlag == True:
+    if MRAtoLGE_registerFlag == True:
         #reg_type = 'rig_aff_def'
-        #reg_type_LGE_MRA = 'aff_def' #aff or rigid
-        aff_reg_type_LGE_MRA = 'aff'
+        #reg_type_MRAtoLGE = 'aff_def' #aff or rigid
+        aff_reg_type_MRAtoLGE = 'aff'
 
-        if def_reg_LGEtoMRA == True:
-            global_reg_type_LGEtoMRA = aff_reg_type_LGE_MRA + '_def'
+        if def_reg_MRAtoLGE == True:
+            global_reg_type_MRAtoLGE = aff_reg_type_MRAtoLGE + '_def'
         else:
-            global_reg_type_LGEtoMRA = aff_reg_type_LGE_MRA
+            global_reg_type_MRAtoLGE = aff_reg_type_MRAtoLGE
 
         target_img = os.path.join(data_root, target_id, 'LGE' + target_id + '.nii')#target is LGE, floating is MRA
         flo_img = os.path.join(data_root, target_id, 'MRA' + target_id + '.nii')
 
-        aff_mat = os.path.join(proc_dump, target_id, 'LGEtoMRA', aff_reg_type_LGE_MRA, 'LGEtoMRA_' + aff_reg_type_LGE_MRA + '_mat' + target_id)
-        aff_img = os.path.join(proc_dump, target_id, 'LGEtoMRA', aff_reg_type_LGE_MRA, 'LGEtoMRA_' + aff_reg_type_LGE_MRA + '_MRA' + target_id + '.nii')
+        aff_mat = os.path.join(proc_dump, target_id, 'MRAtoLGE', aff_reg_type_MRAtoLGE, 'MRAtoLGE_' + aff_reg_type_MRAtoLGE + '_mat' + target_id)
+        aff_img = os.path.join(proc_dump, target_id, 'MRAtoLGE', aff_reg_type_MRAtoLGE, 'MRAtoLGE_' + aff_reg_type_MRAtoLGE + '_MRA' + target_id + '.nii')
         # affine registration
-        if aff_reg_type_LGE_MRA == 'rig':
-            cmd_aff_LGE_MRA = reg_aladin + ' -ref ' + target_img + ' -flo ' + flo_img + ' -res ' + aff_img + ' -aff ' + aff_mat + ' -iso' + ' -rigOnly'
+        if aff_reg_type_MRAtoLGE == 'rig':
+            cmd_aff_MRAtoLGE = reg_aladin + ' -ref ' + target_img + ' -flo ' + flo_img + ' -res ' + aff_img + ' -aff ' + aff_mat + ' -iso' + ' -rigOnly'
 
-        if aff_reg_type_LGE_MRA == 'aff':
-            cmd_aff_LGE_MRA = reg_aladin + ' -ref ' + target_img + ' -flo ' + flo_img + ' -res ' + aff_img + ' -aff ' + aff_mat + ' -iso' + ' -affDirect'
+        if aff_reg_type_MRAtoLGE == 'aff':
+            cmd_aff_MRAtoLGE = reg_aladin + ' -ref ' + target_img + ' -flo ' + flo_img + ' -res ' + aff_img + ' -aff ' + aff_mat + ' -iso' + ' -affDirect'
 
-        if aff_reg_type_LGE_MRA == 'rig_aff':
-            cmd_aff_LGE_MRA = reg_aladin + ' -ref ' + target_img + ' -flo ' + flo_img + ' -res ' + aff_img + ' -aff ' + aff_mat + ' -iso'
-        print(cmd_aff_LGE_MRA)
-        os.system(cmd_aff_LGE_MRA)
+        if aff_reg_type_MRAtoLGE == 'rig_aff':
+            cmd_aff_MRAtoLGE = reg_aladin + ' -ref ' + target_img + ' -flo ' + flo_img + ' -res ' + aff_img + ' -aff ' + aff_mat + ' -iso'
+        print(cmd_aff_MRAtoLGE)
+        if enableCmdFlag == True
+            os.system(cmd_aff_MRAtoLGE)
 
-        if def_reg_LGEtoMRA==True:
-            def_img = os.path.join(proc_dump, target_id, 'LGEtoMRA', global_reg_type, 'LGEtoMRA_' + global_reg_type + '_MRA' + target_id + '.nii')
-            def_output_cpp = os.path.join(proc_dump, target_id, 'LGEtoMRA', global_reg_type, 'LGEtoMRA_' + global_reg_type + '_MRA_CPP' + target_id + '.nii')
+        if def_reg_MRAtoLGE==True:
+            def_img = os.path.join(proc_dump, target_id, 'MRAtoLGE', global_reg_type, 'MRAtoLGE_' + global_reg_type + '_MRA' + target_id + '.nii')
+            def_output_cpp = os.path.join(proc_dump, target_id, 'MRAtoLGE', global_reg_type, 'MRAtoLGE_' + global_reg_type + '_MRA_CPP' + target_id + '.nii')
             #deformable registration
-            cmd_def_LGE_MRA = reg_f3d + ' -ref ' + target_img + ' -flo ' + aff_img + ' -res ' + def_img + ' -cpp ' + def_output_cpp + ' -be ' + be + ' -le ' + le
-            print(cmd_def_LGE_MRA)
-            os.system(cmd_def_LGE_MRA)
+            cmd_def_MRAtoLGE = reg_f3d + ' -ref ' + target_img + ' -flo ' + aff_img + ' -res ' + def_img + ' -cpp ' + def_output_cpp + ' -be ' + be + ' -le ' + le
+            print(cmd_def_MRAtoLGE)
+            if enableCmdFlag == True
+                os.system(cmd_def_MRAtoLGE)
 
 
-    if LGE_MRA_registerResampleFlag == True:
+    if MRAtoLGE_registerResampleFlag == True:
         #flo_lbl1 = os.path.join(data_root, target_id_2, 'myo' + target_id_2 + '.nii')
         #flo_lbl2 = os.path.join(data_root, target_id_2, 'myo-corrected' + target_id_2 + '.nii')
 
-        if def_reg_LGEtoMRA == True:
-            global_reg_type_LGEtoMRA = aff_reg_type_LGE_MRA + '_def'
+        if def_reg_MRAtoLGE == True:
+            global_reg_type_MRAtoLGE = aff_reg_type_MRAtoLGE + '_def'
         else:
-            global_reg_type_LGEtoMRA = aff_reg_type_LGE_MRA
+            global_reg_type_MRAtoLGE = aff_reg_type_MRAtoLGE
 
         #flo_lbl1 = os.path.join(data_root, target_id, 'LGE' + target_id + '.nii')
         #Affine registered result will be resampled without deformable
-        flo_lbl2 = os.path.join(proc_dump, target_id, aff_reg_type_LGE_MRA, 'myo_result_iso_norm_be' + be + '-le' + le2 + '-alpha' + alpha + '-beta' + beta + '-rp' + rp2 + '-rs' + rs2 + target_id + '.nii ')
+        flo_lbl2 = os.path.join(proc_dump, target_id, aff_reg_type_MRAtoLGE, 'myo_result_iso_norm_be' + be + '-le' + le2 + '-alpha' + alpha + '-beta' + beta + '-rp' + rp2 + '-rs' + rs2 + target_id + '.nii ')
         #global could be either affine or def, incase of affine, flo_lbl_2 will be overwritten
         flo_lbl3 = os.path.join(data_root, target_id, 'LGE' + target_id + '.nii')
         flo_lbl4 = os.path.join(proc_dump, target_id, global_reg_type, 'myo_result_iso_norm_be' + be + '-le' + le2 + '-alpha' + alpha + '-beta' + beta + '-rp' + rp2 + '-rs' + rs2 + target_id + '.nii ')
 
-        aff_mat = os.path.join(proc_dump, target_id, 'LGEtoMRA', aff_reg_type_LGE_MRA, 'LGEtoMRA_' + aff_reg_type_LGE_MRA + '_mat' + target_id)
+        aff_mat = os.path.join(proc_dump, target_id, 'MRAtoLGE', aff_reg_type_MRAtoLGE, 'MRAtoLGE_' + aff_reg_type_MRAtoLGE + '_mat' + target_id)
         #affine
-        res_lbl2 = os.path.join(proc_dump, target_id, 'LGEtoMRA', aff_reg_type_LGE_MRA, 'LGEtoMRA_' + aff_reg_type_LGE_MRA + '_LGE' + target_id + '.nii')
+        res_lbl2 = os.path.join(proc_dump, target_id, 'MRAtoLGE', aff_reg_type_MRAtoLGE, 'MRAtoLGE_' + aff_reg_type_MRAtoLGE + '_LGE' + target_id + '.nii')
         #affine or deformable label
-        res_lbl3 = os.path.join(proc_dump, target_id, 'LGEtoMRA', global_reg_type, 'LGEtoMRA_' + global_reg_type + '_LGE' + target_id + '.nii')
-        res_lbl4 = os.path.join(proc_dump, target_id, 'LGEtoMRA', global_reg_type, 'LGEtoMRA_' + global_reg_type + '_myo_result_iso_norm_be' + be + '-le' + le2 + '-alpha' + alpha + '-beta' + beta + '-rp' + rp2 + '-rs' + rs2 + target_id + '.nii ')
+        res_lbl3 = os.path.join(proc_dump, target_id, 'MRAtoLGE', global_reg_type, 'MRAtoLGE_' + global_reg_type + '_LGE' + target_id + '.nii')
+        res_lbl4 = os.path.join(proc_dump, target_id, 'MRAtoLGE', global_reg_type, 'MRAtoLGE_' + global_reg_type + '_myo_result_iso_norm_be' + be + '-le' + le2 + '-alpha' + alpha + '-beta' + beta + '-rp' + rp2 + '-rs' + rs2 + target_id + '.nii ')
 
         #saving both affine and deformable version of LGE-toMRA registrations
         cmd_aff_lbl2 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl2 + ' -res ' + res_lbl2 + ' -trans ' + aff_mat + ' -inter ' + NN
-        os.system(cmd_aff_lbl2)
+        if enableCmdFlag == True
+            os.system(cmd_aff_lbl2)
 
         cmd_aff_lbl3 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl3 + ' -res ' + res_lbl3 + ' -trans ' + aff_mat + ' -inter ' + NN
-        os.system(cmd_aff_lbl3)
+        if enableCmdFlag == True
+            os.system(cmd_aff_lbl3)
 
         cmd_aff_lbl4 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl4 + ' -res ' + res_lbl4 + ' -trans ' + aff_mat + ' -inter ' + NN
-        os.system(cmd_aff_lbl4)
-
+        if enableCmdFlag == True
+            os.system(cmd_aff_lbl4)
 
 
 all_alg_time = timer() - start
