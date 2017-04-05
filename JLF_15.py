@@ -108,6 +108,7 @@ for target_id in target_dataset: #target dataset for cross_correlation, if no cr
     #        atlas_dataset = ['P00', 'P01', 'P02', 'P03', 'P04', 'P05' , 'P06', 'P07', 'P08', 'P09', 'P10' ]
     #start_aff = timer()
     #target_img = os.path.join(data_root, target_id, 'MRA0715.nii')#target is LGE, floating is MRA
+    atlas_dataset = ['0485', '0495', '0515', '0529', '0565', '0578',  '0715', '1115', '1168']    
     target_img = os.path.join(data_root, target_id, 'MRA' + target_id + '.nii')#target is LGE, floating is MRA
     atlas_dataset.remove(target_id)
 
@@ -320,7 +321,6 @@ for target_id in target_dataset: #target dataset for cross_correlation, if no cr
         cmd_aff_lbl4 = reg_resample + ' -ref ' + target_img + ' -flo ' + flo_lbl4 + ' -res ' + res_lbl4 + ' -trans ' + aff_mat + ' -inter ' + NN
         os.system(cmd_aff_lbl4)
 
-    atlas_dataset = ['0485', '0495', '0515', '0529', '0565', '0578',  '0715', '1115', '1168']
 
 
 all_alg_time = timer() - start
