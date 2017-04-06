@@ -1,3 +1,5 @@
+#try LGEtoMRA with aff+def
+
 # LGEtoMRA_aff + intl_rigid + AFFINE + DEF+JLF + MRAtoLGE_aff_def
 
 #it is normalized and isotropic.
@@ -27,8 +29,8 @@ jointfusion = os.path.join(jointfusion_dir, 'jointfusion')
 #FLags
 enableCmdFlag = True
 
-LGEtoMRA_registerFlag=False
-LGEtoMRA_registerResampleFlag=False
+LGEtoMRA_registerFlag=True
+LGEtoMRA_registerResampleFlag=True
 
 affRegFlag=True
 affResampleLabelFLag=True
